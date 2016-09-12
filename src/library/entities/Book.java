@@ -20,17 +20,17 @@ public class Book implements IBook {
         if (!sane(author, title, callNumber, bookID)) {
             throw new IllegalArgumentException("Book : constructor : Invalid arguments");
         }
-        author_ 	= author;
-        title_		= title;
+        author_     = author;
+        title_      = title;
         callNumber_ = callNumber;
-        id_ 		= bookID;
-        state_		= EBookState.AVAILABLE;
-        loan_		= null;
+        id_         = bookID;
+        state_      = EBookState.AVAILABLE;
+        loan_       = null;
     }
 
     private boolean sane(String author, String title, String callNumber, int bookID) {
         return (author     != null && (!author.isEmpty()) &&
-                title	   != null && (!title.isEmpty()) &&
+                title      != null && (!title.isEmpty()) &&
                 callNumber != null && (!callNumber.isEmpty()) &&
                 bookID > 0);
     }
@@ -94,6 +94,10 @@ public class Book implements IBook {
     @Override
     public EBookState getState() {
         return state_;
+    }
+    
+    public void setState(EBookState state) {
+        state_ = state;
     }
 
     @Override
