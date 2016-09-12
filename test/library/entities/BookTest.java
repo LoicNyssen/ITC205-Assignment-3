@@ -18,7 +18,7 @@ public class BookTest {
     private String title_;
     private String callNumber_;
     private int id_;
-    private Book book_; 
+    private Book sut_; 
 
     @Before
     public void setUp() throws Exception {
@@ -27,12 +27,12 @@ public class BookTest {
         callNumber_ = "0";
         id_ = 1;
         
-        book_ = new Book(author_, title_, callNumber_, id_);
+        sut_ = new Book(author_, title_, callNumber_, id_);
     }
     
     @After
     public void tearDown() throws Exception {
-        book_ = null;
+        sut_ = null;
     }
     
     //Tests if book instance is an instance of IBook
@@ -51,7 +51,7 @@ public class BookTest {
     public void testBookAuthorSets() {
         //arrange
         String expected = author_;
-        String actual = book_.getAuthor();
+        String actual = sut_.getAuthor();
         
         //assert
         assertEquals(expected, actual);
@@ -62,7 +62,7 @@ public class BookTest {
     public void testBookTitleSets() {
         //arrange
         String expected = title_;
-        String actual = book_.getTitle();
+        String actual = sut_.getTitle();
         
         //assert
         assertEquals(expected, actual);
@@ -73,7 +73,7 @@ public class BookTest {
     public void testBookCallNumberSets() {
         //arrange
         String expected = callNumber_;
-        String actual = book_.getCallNumber();
+        String actual = sut_.getCallNumber();
         
         //assert
         assertEquals(expected, actual);
@@ -84,7 +84,7 @@ public class BookTest {
     public void testBookIDSets() {
         //arrange
         int expected = id_;
-        int actual = book_.getID();
+        int actual = sut_.getID();
         
         //assert
         assertEquals(expected, actual);
@@ -165,10 +165,10 @@ public class BookTest {
     public void testBorrowException () {
         //arrange
         ILoan mockLoan = mock(ILoan.class);
-        book_.setState(EBookState.DAMAGED);
+        sut_.setState(EBookState.DAMAGED);
         
         //execute
-        book_.borrow(mockLoan);
+        sut_.borrow(mockLoan);
         
         //assert
         fail("Should have thrown a RuntimeException");
@@ -183,9 +183,9 @@ public class BookTest {
         EBookState expectedState = EBookState.ON_LOAN;
 
         //execute
-        book_.borrow(mockLoan);
-        EBookState actualState = book_.getState();
-        ILoan actualLoan = book_.getLoan();
+        sut_.borrow(mockLoan);
+        EBookState actualState = sut_.getState();
+        ILoan actualLoan = sut_.getLoan();
         
         //assert
         assertEquals(expectedState, actualState);
@@ -200,8 +200,8 @@ public class BookTest {
         ILoan expected = mock(ILoan.class);
         
         //execute
-        book_.borrow(expected);
-        ILoan actual = book_.getLoan();
+        sut_.borrow(expected);
+        ILoan actual = sut_.getLoan();
         
         //assert
         assertEquals(expected, actual);
@@ -211,7 +211,7 @@ public class BookTest {
     @Test(expected=RuntimeException.class)
     public void testReturnBookException () {
         //execute
-        book_.returnBook(false);
+        sut_.returnBook(false);
         
         //assert
         fail("Should have thrown a RuntimeException");
@@ -224,13 +224,13 @@ public class BookTest {
         EBookState expected = EBookState.DAMAGED;
         boolean isdamaged = true;
         
-        book_.borrow(mock(ILoan.class));
+        sut_.borrow(mock(ILoan.class));
         
         //execute
-        book_.returnBook(isdamaged);
+        sut_.returnBook(isdamaged);
         
         //assert
-        EBookState actual = book_.getState();
+        EBookState actual = sut_.getState();
         assertEquals(expected, actual);
     }
     
@@ -241,13 +241,13 @@ public class BookTest {
         EBookState expected = EBookState.AVAILABLE;
         boolean isdamaged = false;
         
-        book_.borrow(mock(ILoan.class));
+        sut_.borrow(mock(ILoan.class));
         
         //execute
-        book_.returnBook(isdamaged);
+        sut_.returnBook(isdamaged);
         
         //assert
-        EBookState actual = book_.getState();
+        EBookState actual = sut_.getState();
         assertEquals(expected, actual);
     }
     
@@ -255,7 +255,7 @@ public class BookTest {
     @Test(expected=RuntimeException.class)
     public void testLoseException () {
         //execute
-        book_.lose();
+        sut_.lose();
         
         //assert
         fail("Should have thrown a RuntimeException");
@@ -266,13 +266,13 @@ public class BookTest {
     public void testLose() {
         //arrange
         EBookState expected = EBookState.LOST;
-        book_.borrow(mock(ILoan.class));
+        sut_.borrow(mock(ILoan.class));
         
         //execute
-        book_.lose();
+        sut_.lose();
         
         //assert
-        EBookState actual = book_.getState();
+        EBookState actual = sut_.getState();
         assertEquals(expected, actual);     
     }
     
@@ -280,7 +280,7 @@ public class BookTest {
     @Test(expected=RuntimeException.class)
     public void testRepairException () {
         //execute
-        book_.repair();
+        sut_.repair();
         
         //assert
         fail("Should have thrown a RuntimeException");
@@ -292,14 +292,14 @@ public class BookTest {
         //arrange
         EBookState expected = EBookState.AVAILABLE;
         
-        book_.borrow(mock(ILoan.class));    //Maybe these 2 lines should
-        book_.returnBook(true);             //be replaced with setState???
+        sut_.borrow(mock(ILoan.class));    //Maybe these 2 lines should
+        sut_.returnBook(true);             //be replaced with setState???
         
         //execute
-        book_.repair();
+        sut_.repair();
         
         //assert
-        EBookState actual = book_.getState();
+        EBookState actual = sut_.getState();
         assertEquals(expected, actual);     
     }
     
@@ -307,10 +307,10 @@ public class BookTest {
     @Test(expected=RuntimeException.class)
     public void testDisposeException () {
         //arrange
-        book_.setState(EBookState.ON_LOAN);
+        sut_.setState(EBookState.ON_LOAN);
         
         //execute
-        book_.dispose();
+        sut_.dispose();
         
         //assert
         fail("Should have thrown a RuntimeException");
@@ -323,10 +323,10 @@ public class BookTest {
         EBookState expected = EBookState.DISPOSED;
         
         //execute
-        book_.dispose();
+        sut_.dispose();
         
         //assert
-        EBookState actual = book_.getState();
+        EBookState actual = sut_.getState();
         assertEquals(expected, actual); 
     }
 }
