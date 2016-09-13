@@ -1,5 +1,11 @@
 package library;
 
+import library.daos.BookHelper;
+import library.daos.BookMapDAO;
+import library.daos.LoanHelper;
+import library.daos.LoanMapDAO;
+import library.daos.MemberHelper;
+import library.daos.MemberMapDAO;
 import library.hardware.CardReader;
 import library.hardware.Display;
 import library.hardware.Printer;
@@ -23,6 +29,7 @@ public class Main implements IMainListener {
 	private Scanner scanner;
 	private Printer printer;
 	private Display display;
+	
 	private IBookDAO bookDAO;
 	private ILoanDAO loanDAO;
 	private IMemberDAO memberDAO;
@@ -33,7 +40,11 @@ public class Main implements IMainListener {
 		printer = new Printer();
 		display = new Display();
 		
-		//setupTestData();
+        bookDAO = new BookMapDAO(new BookHelper());
+        loanDAO = new LoanMapDAO(new LoanHelper());
+        memberDAO = new MemberMapDAO(new MemberHelper());
+		
+		setupTestData();
 	}
 
 
@@ -48,7 +59,7 @@ public class Main implements IMainListener {
 	@Override
 	public void borrowBooks() {
 		BorrowUC_CTL ctl = new BorrowUC_CTL(reader, scanner, printer, display, 
-				 null, null, null);
+		        bookDAO, loanDAO, memberDAO);
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
             	ctl.initialise();
