@@ -64,12 +64,12 @@ public class BorrowUC_CTL implements ICardReaderListener,
 	}
 	
 	public void initialise() {
-		previous = display.getDisplay();
-		display.setDisplay((JPanel) ui, "Borrow UI");		
+		previous_ = display_.getDisplay();
+		display_.setDisplay((JPanel) ui_, "Borrow UI");		
 	}
 	
 	public void close() {
-		display.setDisplay(previous, "Main Menu");
+		display_.setDisplay(previous_, "Main Menu");
 	}
 
 	@Override
