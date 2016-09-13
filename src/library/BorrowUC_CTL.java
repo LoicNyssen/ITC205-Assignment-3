@@ -61,11 +61,14 @@ public class BorrowUC_CTL implements ICardReaderListener,
         bookDAO_   = bookDAO;
         loanDAO_   = loanDAO;
         memberDAO_ = memberDAO;
+        
+        reader_.addListener(this);
 	}
 	
 	public void initialise() {
 		previous_ = display_.getDisplay();
-		display_.setDisplay((JPanel) ui_, "Borrow UI");		
+		display_.setDisplay((JPanel) ui_, "Borrow UI");
+		setState(EBorrowState.INITIALIZED);
 	}
 	
 	public void close() {
@@ -86,27 +89,31 @@ public class BorrowUC_CTL implements ICardReaderListener,
 
 	
 	private void setState(EBorrowState state) {
-		throw new RuntimeException("Not implemented yet");
+        if (state == EBorrowState.INITIALIZED) {
+            reader_.setEnabled(true);
+        } else {
+            throw new RuntimeException("Error : Unknown state");
+        }
 	}
 
 	@Override
 	public void cancelled() {
-		close();
+        setState(EBorrowState.CANCELLED);
 	}
 	
 	@Override
 	public void scansCompleted() {
-		throw new RuntimeException("Not implemented yet");
+        setState(EBorrowState.CONFIRMING_LOANS);
 	}
 
 	@Override
 	public void loansConfirmed() {
-		throw new RuntimeException("Not implemented yet");
+        setState(EBorrowState.COMPLETED);
 	}
 
 	@Override
 	public void loansRejected() {
-		throw new RuntimeException("Not implemented yet");
+        setState(EBorrowState.SCANNING_BOOKS);
 	}
 
 	private String buildLoanListDisplay(List<ILoan> loans) {
