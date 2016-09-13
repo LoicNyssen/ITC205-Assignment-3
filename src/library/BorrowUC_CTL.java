@@ -25,33 +25,42 @@ import library.interfaces.hardware.IScannerListener;
 public class BorrowUC_CTL implements ICardReaderListener, 
 									 IScannerListener, 
 									 IBorrowUIListener {
+    private IBorrowUI ui_;
+    private EBorrowState state_;
+    
+    private ICardReader reader_;
+    private IScanner scanner_;
+    private IPrinter printer_;
+    private IDisplay display_;
+    
+    private IBookDAO bookDAO_;
+    private IMemberDAO memberDAO_;
+    private ILoanDAO loanDAO_;
+    
+    private int scanCount_ = 0;
+    
+	private List<IBook> bookList_;
+	private List<ILoan> loanList_;
+	private IMember borrower_;
 	
-	private ICardReader reader;
-	private IScanner scanner; 
-	private IPrinter printer; 
-	private IDisplay display;
-	//private String state;
-	private int scanCount = 0;
-	private IBorrowUI ui;
-	private EBorrowState state; 
-	private IBookDAO bookDAO;
-	private IMemberDAO memberDAO;
-	private ILoanDAO loanDAO;
-	
-	private List<IBook> bookList;
-	private List<ILoan> loanList;
-	private IMember borrower;
-	
-	private JPanel previous;
+	private JPanel previous_;
 
 
 	public BorrowUC_CTL(ICardReader reader, IScanner scanner, 
 			IPrinter printer, IDisplay display,
 			IBookDAO bookDAO, ILoanDAO loanDAO, IMemberDAO memberDAO ) {
 
-		this.display = display;
-		this.ui = new BorrowUC_UI(this);
-		state = EBorrowState.CREATED;
+		ui_    = new BorrowUC_UI(this);
+		state_ = EBorrowState.CREATED;
+		
+		reader_  = reader;
+		scanner_ = scanner;
+		printer_ = printer;
+        display_ = display;
+        
+        bookDAO_   = bookDAO;
+        loanDAO_   = loanDAO;
+        memberDAO_ = memberDAO;
 	}
 	
 	public void initialise() {
