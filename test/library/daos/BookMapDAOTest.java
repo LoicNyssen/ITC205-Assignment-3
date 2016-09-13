@@ -10,15 +10,15 @@ import org.junit.Test;
 import library.entities.Book;
 import library.interfaces.entities.IBook;
 
-public class BookDAOTest {
+public class BookMapDAOTest {
     
-    private BookDAO sut_;
+    private BookMapDAO sut_;
     private BookHelper bookHelper_;
 
     @Before
     public void setUp() throws Exception {
         bookHelper_ = mock(BookHelper.class);
-        sut_ = new BookDAO(bookHelper_);
+        sut_ = new BookMapDAO(bookHelper_);
     }
 
     @After
@@ -30,7 +30,7 @@ public class BookDAOTest {
     @Test(expected=IllegalArgumentException.class)
     public void testBookDAOException() {
         //arrange
-        sut_ = new BookDAO(null);
+        sut_ = new BookMapDAO(null);
         
         //assert
         fail("Should have thrown a IllegalArgumentException");
