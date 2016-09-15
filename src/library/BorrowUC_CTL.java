@@ -77,7 +77,40 @@ public class BorrowUC_CTL implements ICardReaderListener,
 
 	@Override
 	public void cardSwiped(int memberID) {
-		throw new RuntimeException("Not implemented yet");
+	    System.out.println("debug: cardSwiped : " + memberID);
+	    
+	    borrower_ = memberDAO_.getMemberByID(memberID);
+	    
+	    if (borrower_ != null) {
+	        ui_.displayMemberDetails(borrower_.getID(), 
+                                     borrower_.getFirstName() + " " +
+                                     borrower_.getLastName(),
+                                     borrower_.getContactPhone());
+	        
+	        if (borrower_.hasFinesPayable()) {
+	            ui_.displayOutstandingFineMessage(borrower_.getFineAmount());
+	        }
+	        
+	        boolean dueLoans  = borrower_.hasOverDueLoans();
+	        boolean loanLimit = borrower_.hasReachedLoanLimit();
+	        boolean fineLimit = borrower_.hasReachedFineLimit();
+	        
+	        if (dueLoans || loanLimit || fineLimit) {
+                //setState(EBorrowState.BORROWING_RESTRICTED); // Not implemented yet
+	            
+	            if (dueLoans)  ui_.displayOverDueMessage();
+	            if (loanLimit) ui_.displayAtLoanLimitMessage();
+	            if (fineLimit) ui_.displayOverFineLimitMessage(borrower_.getFineAmount());
+            } else {
+                //setState(EBorrowState.SCANNING_BOOKS); // Not implemented yet
+            }
+	        ui_.displayExistingLoan(buildLoanListDisplay(borrower_.getLoans()));
+        } else {
+            ui_.displayErrorMessage(String.format("Member ID %d not found", memberID));
+        }
+	    
+	    
+	    
 	}
 	
 	
@@ -92,12 +125,16 @@ public class BorrowUC_CTL implements ICardReaderListener,
         
 	    switch (state) {
             case INITIALIZED:
+                ui_.setState(state);
                 reader_.setEnabled(true);
+                scanner_.setEnabled(false);
                 break;
+                
             default:
-                throw new RuntimeException("Unknown state");
+                throw new RuntimeException("Unknown state : " + state);
         }
 	    
+	    state_ = state;
 	    System.out.println("State set to: " + state);
 	}
 
