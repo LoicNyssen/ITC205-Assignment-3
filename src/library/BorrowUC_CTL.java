@@ -96,13 +96,13 @@ public class BorrowUC_CTL implements ICardReaderListener,
 	        boolean fineLimit = borrower_.hasReachedFineLimit();
 	        
 	        if (dueLoans || loanLimit || fineLimit) {
-                //setState(EBorrowState.BORROWING_RESTRICTED); // Not implemented yet
+                setState(EBorrowState.BORROWING_RESTRICTED);
 	            
 	            if (dueLoans)  ui_.displayOverDueMessage();
 	            if (loanLimit) ui_.displayAtLoanLimitMessage();
 	            if (fineLimit) ui_.displayOverFineLimitMessage(borrower_.getFineAmount());
             } else {
-                //setState(EBorrowState.SCANNING_BOOKS); // Not implemented yet
+                setState(EBorrowState.SCANNING_BOOKS);
             }
 	        ui_.displayExistingLoan(buildLoanListDisplay(borrower_.getLoans()));
         } else {
@@ -129,11 +129,20 @@ public class BorrowUC_CTL implements ICardReaderListener,
                 reader_.setEnabled(true);
                 scanner_.setEnabled(false);
                 break;
-                
+            case BORROWING_RESTRICTED:
+                reader_.setEnabled(false);
+                scanner_.setEnabled(false);
+                break;
+            case SCANNING_BOOKS:
+                reader_.setEnabled(false);
+                scanner_.setEnabled(true);
+                bookList_ = new ArrayList<IBook>();
+                loanList_ = new ArrayList<ILoan>();
+                scanCount_ = borrower_.getLoans().size();
+                break;
             default:
                 throw new RuntimeException("Unknown state : " + state);
         }
-	    
 	    state_ = state;
 	    System.out.println("State set to: " + state);
 	}
