@@ -77,24 +77,19 @@ public class BorrowUC_CTL implements ICardReaderListener,
 
 	@Override
 	public void cardSwiped(int memberID) {
-	    System.out.println("debug: cardSwiped : " + memberID);
-	    
+	    if (state_ != EBorrowState.INITIALIZED) {
+            throw new RuntimeException("BorrowUC_CTL: cardSwiped : illegal operation in state: " + state_);
+        }
 	    borrower_ = memberDAO_.getMemberByID(memberID);
-	    
+	    	    
 	    if (borrower_ != null) {
-	        ui_.displayMemberDetails(borrower_.getID(), 
-                                     borrower_.getFirstName() + " " +
-                                     borrower_.getLastName(),
-                                     borrower_.getContactPhone());
-	        
+            boolean dueLoans  = borrower_.hasOverDueLoans();
+            boolean loanLimit = borrower_.hasReachedLoanLimit();
+            boolean fineLimit = borrower_.hasReachedFineLimit();
+            
 	        if (borrower_.hasFinesPayable()) {
 	            ui_.displayOutstandingFineMessage(borrower_.getFineAmount());
-	        }
-	        
-	        boolean dueLoans  = borrower_.hasOverDueLoans();
-	        boolean loanLimit = borrower_.hasReachedLoanLimit();
-	        boolean fineLimit = borrower_.hasReachedFineLimit();
-	        
+	        }	        
 	        if (dueLoans || loanLimit || fineLimit) {
                 setState(EBorrowState.BORROWING_RESTRICTED);
 	            
@@ -104,13 +99,15 @@ public class BorrowUC_CTL implements ICardReaderListener,
             } else {
                 setState(EBorrowState.SCANNING_BOOKS);
             }
+            ui_.displayMemberDetails(borrower_.getID(), 
+                    borrower_.getFirstName() + " " +
+                    borrower_.getLastName(),
+                    borrower_.getContactPhone());
+            
 	        ui_.displayExistingLoan(buildLoanListDisplay(borrower_.getLoans()));
         } else {
             ui_.displayErrorMessage(String.format("Member ID %d not found", memberID));
         }
-	    
-	    
-	    
 	}
 	
 	
@@ -140,9 +137,16 @@ public class BorrowUC_CTL implements ICardReaderListener,
                 loanList_ = new ArrayList<ILoan>();
                 scanCount_ = borrower_.getLoans().size();
                 break;
+            case CANCELLED:
+                reader_.setEnabled(false);
+                scanner_.setEnabled(false);
+                close();
+                break;
             default:
                 throw new RuntimeException("Unknown state : " + state);
         }
+
+        ui_.setState(state);
 	    state_ = state;
 	    System.out.println("State set to: " + state);
 	}
