@@ -89,11 +89,16 @@ public class BorrowUC_CTL implements ICardReaderListener,
 
 	
 	private void setState(EBorrowState state) {
-        if (state == EBorrowState.INITIALIZED) {
-            reader_.setEnabled(true);
-        } else {
-            throw new RuntimeException("Error : Unknown state");
+        
+	    switch (state) {
+            case INITIALIZED:
+                reader_.setEnabled(true);
+                break;
+            default:
+                throw new RuntimeException("Unknown state");
         }
+	    
+	    System.out.println("State set to: " + state);
 	}
 
 	@Override
