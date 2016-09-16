@@ -6,7 +6,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import library.entities.Book;
 import library.interfaces.entities.IBook;
 
 public class BookHelperTest {

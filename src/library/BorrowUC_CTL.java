@@ -133,7 +133,15 @@ public class BorrowUC_CTL implements ICardReaderListener,
             } else ui_.displayErrorMessage("Book " + book.getID() + " is not available: "+ book.getState());
         } else  ui_.displayErrorMessage("Cant find book " + barcode);
     }
-
+    
+    public EBorrowState getState() {
+        return state_;
+    }
+    
+    public int getScanCount () {
+        return scanCount_;
+    }
+    
     private void setState(EBorrowState state) {
         switch (state) {
             case INITIALIZED:
