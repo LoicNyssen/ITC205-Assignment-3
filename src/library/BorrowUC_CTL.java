@@ -39,8 +39,8 @@ public class BorrowUC_CTL implements ICardReaderListener,
     
     private int scanCount_ = 0;
     
-    private List<IBook> bookList_;
-    private List<ILoan> loanList_;
+    private List<IBook> bookList_ = new ArrayList<IBook>();
+    private List<ILoan> loanList_ = new ArrayList<ILoan>();
     private IMember borrower_;
     
     private JPanel previous_;
@@ -65,21 +65,51 @@ public class BorrowUC_CTL implements ICardReaderListener,
         memberDAO_ = memberDAO;
     }
     
+    
+    public BorrowUC_CTL(ICardReader reader, IScanner scanner, IPrinter printer, IDisplay display,
+                        IBookDAO bookDAO, ILoanDAO loanDAO, IMemberDAO memberDAO, IBorrowUI ui ) {
+
+        ui_    = ui;
+        state_ = EBorrowState.CREATED;
+        
+        reader_  = reader;
+        reader_.addListener(this);
+        
+        scanner_ = scanner;
+        scanner_.addListener(this);
+        
+        printer_ = printer;
+        display_ = display;
+        
+        bookDAO_   = bookDAO;
+        loanDAO_   = loanDAO;
+        memberDAO_ = memberDAO;
+    }
+    
+    
+    
     public void initialise() {
+        setState(EBorrowState.INITIALIZED);
         previous_ = display_.getDisplay();
         display_.setDisplay((JPanel) ui_, "Borrow UI");
-        setState(EBorrowState.INITIALIZED);
     }
+    
+    
+    
     
     public void close() {
         display_.setDisplay(previous_, "Main Menu");
     }
+    
+    
     
     @Override
     public void cardSwiped(int memberID) {
         if (state_ != EBorrowState.INITIALIZED) {
             throw new RuntimeException("BorrowUC_CTL: cardSwiped : illegal operation in state: " + state_);
         }
+        ui_.displayScannedBookDetails("");
+        ui_.displayPendingLoan(""); 
         borrower_ = memberDAO_.getMemberByID(memberID);
                 
         if (borrower_ != null) {
@@ -110,6 +140,8 @@ public class BorrowUC_CTL implements ICardReaderListener,
         }
     }
     
+    
+    
     @Override
     public void bookScanned(int barcode) {
         if (state_ != EBorrowState.SCANNING_BOOKS) {
@@ -119,6 +151,7 @@ public class BorrowUC_CTL implements ICardReaderListener,
         if (book != null) {
             if (book.getState() == EBookState.AVAILABLE) {
                 if (bookList_.contains(book)) {
+                    scanCount_++;
                     bookList_.add(book);
                     ILoan loan = loanDAO_.createLoan(borrower_, book);
                     loanList_.add(loan);
@@ -129,60 +162,69 @@ public class BorrowUC_CTL implements ICardReaderListener,
                     if (scanCount_ >= IMember.LOAN_LIMIT) {
                         setState(EBorrowState.CONFIRMING_LOANS);
                     }
-                } else ui_.displayErrorMessage("Aready scanned book " + book.getID());
-            } else ui_.displayErrorMessage("Book " + book.getID() + " is not available: "+ book.getState());
-        } else  ui_.displayErrorMessage("Cant find book " + barcode);
+                } else
+                    ui_.displayErrorMessage("Aready scanned book " + book.getID());
+            } else
+                ui_.displayErrorMessage("Book " + book.getID() + " is not available: "+ book.getState());
+        } else
+            ui_.displayErrorMessage("Cant find book " + barcode);
     }
     
-    public EBorrowState getState() {
-        return state_;
-    }
     
-    public int getScanCount () {
-        return scanCount_;
-    }
     
     private void setState(EBorrowState state) {
+        state_ = state;
+        ui_.setState(state_);
+        
         switch (state) {
             case INITIALIZED:
                 reader_.setEnabled(true);
                 scanner_.setEnabled(false);
                 break;
+                
             case BORROWING_RESTRICTED:
                 reader_.setEnabled(false);
                 scanner_.setEnabled(false);
                 break;
+                
             case SCANNING_BOOKS:
                 reader_.setEnabled(false);
                 scanner_.setEnabled(true);
-                bookList_ = new ArrayList<IBook>();
-                loanList_ = new ArrayList<ILoan>();
                 scanCount_ = borrower_.getLoans().size();
                 break;
+                
             case CANCELLED:
                 reader_.setEnabled(false);
                 scanner_.setEnabled(false);
                 close();
                 break;
+                
+            case CREATED:
+                this.reader_.setEnabled(false);
+                this.scanner_.setEnabled(false);
+                break;
+                
             case CONFIRMING_LOANS:
-                ui_.displayConfirmingLoan(buildLoanListDisplay(loanList_));
                 reader_.setEnabled(false);
                 scanner_.setEnabled(false);
+                ui_.displayConfirmingLoan(buildLoanListDisplay(loanList_));
                 break;
+                
             case COMPLETED:
                 reader_.setEnabled(false);
                 scanner_.setEnabled(false);
+                
                 for (ILoan loan : loanList_) {
                     loanDAO_.commitLoan(loan);
                 }
+                
                 printer_.print(buildLoanListDisplay(loanList_));
+                
                 close();
                 break;
             default:
                 throw new RuntimeException("BorrowUC_CTL: setState : unknown state: " + state_);
         }
-        ui_.setState(state);
-        state_ = state;
     }
 
     @Override
@@ -212,5 +254,17 @@ public class BorrowUC_CTL implements ICardReaderListener,
             bld.append(ln.toString());
         }
         return bld.toString();      
+    }
+    
+    
+    
+    public EBorrowState getState() {
+        return state_;
+    }
+    
+    
+    
+    public int getScanCount () {
+        return scanCount_;
     }
 }

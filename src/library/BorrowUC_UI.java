@@ -145,6 +145,9 @@ public class BorrowUC_UI extends JPanel implements IBorrowUI {
 		IBorrowUI ui = panels.get(state);
 		ui.displayErrorMessage(errorMesg);		
 	}
-
+	
+	public EBorrowState getState() {
+        return this.state;
+    }
 
 }
