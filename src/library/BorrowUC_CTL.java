@@ -152,16 +152,17 @@ public class BorrowUC_CTL implements ICardReaderListener,
         if (state_ != EBorrowState.SCANNING_BOOKS) {
             throw new RuntimeException("BorrowUC_CTL: bookScanned : illegal operation in state: " + state_);
         }
-        ui_.displayErrorMessage("");
         
         IBook book = bookDAO_.getBookByID(barcode);
         
         if (book == null) {
             ui_.displayErrorMessage("Cant find book " + barcode);
+            return;
         }
         
         if (book.getState() != EBookState.AVAILABLE) {
             ui_.displayErrorMessage("Book " + book.getID() + " is not available: "+ book.getState());
+            return;
         }
             
         if (bookList_.contains(book)) {
@@ -277,6 +278,10 @@ public class BorrowUC_CTL implements ICardReaderListener,
     
     public List<ILoan> getLoanList () {
         return loanList_;
+    }
+    
+    public List<IBook> getBookList () {
+        return bookList_;
     }
     
     public EBorrowState getState() {

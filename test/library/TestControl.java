@@ -30,11 +30,8 @@ import library.interfaces.hardware.IDisplay;
 import library.interfaces.hardware.IPrinter;
 import library.interfaces.hardware.IScanner;
 
-//import library.*;
 import library.daos.*;
-import library.entities.Book;
 import library.interfaces.EBorrowState;
-//import library.interfaces.daos.*;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -109,101 +106,148 @@ public class TestControl {
     
     @Test
     public void testCardSwipedHasFines() {
+        //arrange
         sut.initialise();
         reset(reader);
         reset(scanner);
         reset(ui);
-        
-        int memberId = 2;
-        
+
+        int memberId = 5;
+
+        //execute
         sut.cardSwiped(memberId);
         
-        assertEquals(EBorrowState.BORROWING_RESTRICTED,sut.getState());
+        //assert
+        verify(ui).setState(EBorrowState.SCANNING_BOOKS);
         verify(reader).setEnabled(false);
-        verify(scanner).setEnabled(false);
-        verify(ui).setState(EBorrowState.BORROWING_RESTRICTED);
-        verify(ui).displayScannedBookDetails("");           
-        verify(ui).displayPendingLoan(""); 
-        verify(ui).displayMemberDetails(eq(memberId), anyString(), anyString());  
+        verify(scanner).setEnabled(true);
+        assertEquals(EBorrowState.SCANNING_BOOKS, sut.getState());
+        verify(ui).displayMemberDetails(eq(memberId), anyString(), anyString());
+        verify(ui).displayOutstandingFineMessage(eq(5.0f));
         verify(ui).displayExistingLoan(anyString());
         assertTrue(sut.getScanCount() == 0);
     }
     
     @Test
     public void testCardSwipedOverdue() {
+        //arrange
         sut.initialise();
         reset(reader);
         reset(scanner);
         reset(ui);
-        
+
         int memberId = 2;
-        
+
+        //execute
         sut.cardSwiped(memberId);
-        
-         
+
+        //assert
+        verify(ui).setState(EBorrowState.BORROWING_RESTRICTED);
+        verify(reader).setEnabled(false);
+        verify(scanner).setEnabled(false);
+        assertEquals(EBorrowState.BORROWING_RESTRICTED, sut.getState());
+        verify(ui).displayMemberDetails(eq(memberId), anyString(), anyString());
         verify(ui).displayOverDueMessage();
+        verify(ui).displayExistingLoan(anyString());
+        assertTrue(sut.getScanCount() == 0);
     }
     
     @Test
     public void testCardSwipedLoanLimit() {
+        //arrange
         sut.initialise();
         reset(reader);
         reset(scanner);
         reset(ui);
-        
+
         int memberId = 4;
-        
+
+        //execute
         sut.cardSwiped(memberId);
-        
-         
+
+        //assert
+        verify(ui).setState(EBorrowState.BORROWING_RESTRICTED);
+        verify(reader).setEnabled(false);
+        verify(scanner).setEnabled(false);
+        assertEquals(EBorrowState.BORROWING_RESTRICTED, sut.getState());
+        verify(ui).displayMemberDetails(eq(memberId), anyString(), anyString());
         verify(ui).displayAtLoanLimitMessage();
+        verify(ui).displayExistingLoan(anyString());
+        assertTrue(sut.getScanCount() == 0);
     }
     
     @Test
     public void testCardSwipedFineLimit() {
+        //arrange
         sut.initialise();
         reset(reader);
         reset(scanner);
         reset(ui);
-        
-        int memberId = 3;
-        
-        sut.cardSwiped(memberId);
-        
-         
-        verify(ui).displayOverFineLimitMessage(anyFloat());
-    }
 
+        int memberId = 3;
+
+        //execute
+        sut.cardSwiped(memberId);
+
+        //assert
+        verify(ui).setState(EBorrowState.BORROWING_RESTRICTED);
+        verify(reader).setEnabled(false);
+        verify(scanner).setEnabled(false);
+        assertEquals(EBorrowState.BORROWING_RESTRICTED, sut.getState());
+        verify(ui).displayMemberDetails(eq(memberId), anyString(), anyString());
+        verify(ui).displayOverFineLimitMessage(eq(10.0f));
+        verify(ui).displayExistingLoan(anyString());
+        assertTrue(sut.getScanCount() == 0);
+    }
+    
+    
     @Test
     public void testBookScanned() {
+        //arrange
         sut.initialise();
+        reset(reader);
+        reset(scanner);
+        reset(ui);
 
-        testCardSwipedNoRestrictions();
-        
-        int bookId = 15;
+        int memberId = 1;
+        sut.cardSwiped(memberId);
+
+        //execute
+        int bookId = 10;
         sut.bookScanned(bookId);
         
         IBook book = bookDAO.getBookByID(bookId);
-        
-        
-        assertEquals(EBookState.AVAILABLE, book.getState());
-        //Need to come back to this if i have time... Don't use test data add book here... maybe :S
-    }
 
+        //assert
+        assertEquals(EBookState.AVAILABLE, book.getState());
+        assertEquals(1, sut.getScanCount());
+        assertTrue(sut.getBookList().contains(book));
+        verify(ui).displayScannedBookDetails(book.toString());
+        verify(ui).displayPendingLoan(sut.buildLoanListDisplay(sut.getLoanList()));  
+    }
+    
     @Test
     public void testBookScannedOnLoan() {
+        //arrange
         sut.initialise();
-        sut.cardSwiped(1);
+        reset(reader);
+        reset(scanner);
+        reset(ui);
 
-        int bookId = 1;
+        int memberId = 1;
+        sut.cardSwiped(memberId);
+
+        //execute
+        int bookId = 2;
         sut.bookScanned(bookId);
         
         IBook book = bookDAO.getBookByID(bookId);
         
+        //assert
         assertEquals(EBookState.ON_LOAN, book.getState());
-        verify(ui).displayScannedBookDetails(anyString());
+        verify(ui).displayErrorMessage("Book " + book.getID() + " is not available: "+ book.getState());  
     }
-
+    
     @Test
     public void testCancelled() {
         sut.cancelled();
