@@ -266,7 +266,7 @@ public class BorrowUC_CTL implements ICardReaderListener,
         setState(EBorrowState.SCANNING_BOOKS);
     }
 
-    String buildLoanListDisplay(List<ILoan> loans) {
+    public String buildLoanListDisplay(List<ILoan> loans) {
         StringBuilder bld = new StringBuilder();
         for (ILoan ln : loans) {
             if (bld.length() > 0) bld.append("\n\n");
