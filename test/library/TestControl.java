@@ -21,6 +21,7 @@ import org.mockito.Spy;
 import library.interfaces.daos.IBookDAO;
 import library.interfaces.daos.ILoanDAO;
 import library.interfaces.daos.IMemberDAO;
+import library.interfaces.entities.EBookState;
 import library.interfaces.entities.IBook;
 import library.interfaces.entities.ILoan;
 import library.interfaces.entities.IMember;
@@ -31,6 +32,7 @@ import library.interfaces.hardware.IScanner;
 
 //import library.*;
 import library.daos.*;
+import library.entities.Book;
 import library.interfaces.EBorrowState;
 //import library.interfaces.daos.*;
 
@@ -67,6 +69,7 @@ public class TestControl {
 
     @After
     public void tearDown() throws Exception {
+        sut = null;
     }
 
     @Test
@@ -103,7 +106,116 @@ public class TestControl {
         verify(ui).displayExistingLoan(anyString());
         assertTrue(sut.getScanCount() == 0);
     }
+    
+    @Test
+    public void testCardSwipedHasFines() {
+        sut.initialise();
+        reset(reader);
+        reset(scanner);
+        reset(ui);
+        
+        int memberId = 2;
+        
+        sut.cardSwiped(memberId);
+        
+        assertEquals(EBorrowState.BORROWING_RESTRICTED,sut.getState());
+        verify(reader).setEnabled(false);
+        verify(scanner).setEnabled(false);
+        verify(ui).setState(EBorrowState.BORROWING_RESTRICTED);
+        verify(ui).displayScannedBookDetails("");           
+        verify(ui).displayPendingLoan(""); 
+        verify(ui).displayMemberDetails(eq(memberId), anyString(), anyString());  
+        verify(ui).displayExistingLoan(anyString());
+        assertTrue(sut.getScanCount() == 0);
+    }
+    
+    @Test
+    public void testCardSwipedOverdue() {
+        sut.initialise();
+        reset(reader);
+        reset(scanner);
+        reset(ui);
+        
+        int memberId = 2;
+        
+        sut.cardSwiped(memberId);
+        
+         
+        verify(ui).displayOverDueMessage();
+    }
+    
+    @Test
+    public void testCardSwipedLoanLimit() {
+        sut.initialise();
+        reset(reader);
+        reset(scanner);
+        reset(ui);
+        
+        int memberId = 4;
+        
+        sut.cardSwiped(memberId);
+        
+         
+        verify(ui).displayAtLoanLimitMessage();
+    }
+    
+    @Test
+    public void testCardSwipedFineLimit() {
+        sut.initialise();
+        reset(reader);
+        reset(scanner);
+        reset(ui);
+        
+        int memberId = 3;
+        
+        sut.cardSwiped(memberId);
+        
+         
+        verify(ui).displayOverFineLimitMessage(anyFloat());
+    }
 
+    @Test
+    public void testBookScanned() {
+        sut.initialise();
+
+        testCardSwipedNoRestrictions();
+        
+        int bookId = 15;
+        sut.bookScanned(bookId);
+        
+        IBook book = bookDAO.getBookByID(bookId);
+        
+        
+        assertEquals(EBookState.AVAILABLE, book.getState());
+        //Need to come back to this if i have time... Don't use test data add book here... maybe :S
+    }
+
+    @Test
+    public void testBookScannedOnLoan() {
+        sut.initialise();
+        sut.cardSwiped(1);
+
+        int bookId = 1;
+        sut.bookScanned(bookId);
+        
+        IBook book = bookDAO.getBookByID(bookId);
+        
+        assertEquals(EBookState.ON_LOAN, book.getState());
+        verify(ui).displayScannedBookDetails(anyString());
+    }
+
+    @Test
+    public void testCancelled() {
+        sut.cancelled();
+        assertSame(EBorrowState.CANCELLED, sut.getState());
+    }
+
+    @Test
+    public void testScansCompleted() {
+        sut.scansCompleted();
+        assertSame(EBorrowState.CONFIRMING_LOANS, sut.getState());
+    }
+    
     private void setUpTestData() {
         IBook[] book = new IBook[15];
         IMember[] member = new IMember[6];
