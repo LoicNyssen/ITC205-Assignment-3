@@ -39,8 +39,8 @@ public class BorrowUC_CTL implements ICardReaderListener,
     
     private int scanCount_ = 0;
     
-    private List<IBook> bookList_ = new ArrayList<IBook>();
-    private List<ILoan> loanList_ = new ArrayList<ILoan>();
+    private List<IBook> bookList_;
+    private List<ILoan> loanList_;
     private IMember borrower_;
     
     private JPanel previous_;
@@ -102,44 +102,49 @@ public class BorrowUC_CTL implements ICardReaderListener,
     }
     
     
-    
     @Override
     public void cardSwiped(int memberID) {
         if (state_ != EBorrowState.INITIALIZED) {
             throw new RuntimeException("BorrowUC_CTL: cardSwiped : illegal operation in state: " + state_);
         }
-        ui_.displayScannedBookDetails("");
-        ui_.displayPendingLoan(""); 
+
         borrower_ = memberDAO_.getMemberByID(memberID);
-                
-        if (borrower_ != null) {
-            boolean dueLoans  = borrower_.hasOverDueLoans();
-            boolean loanLimit = borrower_.hasReachedLoanLimit();
-            boolean fineLimit = borrower_.hasReachedFineLimit();
-            
-            if (borrower_.hasFinesPayable()) {
-                ui_.displayOutstandingFineMessage(borrower_.getFineAmount());
-            }           
-            if (dueLoans || loanLimit || fineLimit) {
-                setState(EBorrowState.BORROWING_RESTRICTED);
-                
-                if (dueLoans)  ui_.displayOverDueMessage();
-                if (loanLimit) ui_.displayAtLoanLimitMessage();
-                if (fineLimit) ui_.displayOverFineLimitMessage(borrower_.getFineAmount());
-            } else {
-                setState(EBorrowState.SCANNING_BOOKS);
-            }
-            ui_.displayMemberDetails(borrower_.getID(), 
-                    borrower_.getFirstName() + " " +
-                    borrower_.getLastName(),
-                    borrower_.getContactPhone());
-            
-            ui_.displayExistingLoan(buildLoanListDisplay(borrower_.getLoans()));
-        } else {
+        
+        if (borrower_ == null) {
             ui_.displayErrorMessage("Cant find menber :" + memberID);
+            return;
         }
+        
+        boolean dueLoans  = borrower_.hasOverDueLoans();
+        boolean loanLimit = borrower_.hasReachedLoanLimit();
+        boolean fineLimit = borrower_.hasReachedFineLimit();
+        
+        if (dueLoans || loanLimit || fineLimit) {
+            setState(EBorrowState.BORROWING_RESTRICTED);
+        } else {
+            setState(EBorrowState.SCANNING_BOOKS);
+        }
+        
+        ui_.displayMemberDetails(borrower_.getID(), 
+                                 borrower_.getFirstName() + " " +
+                                 borrower_.getLastName(),
+                                 borrower_.getContactPhone());
+        
+        if (borrower_.hasFinesPayable()) {
+            ui_.displayOutstandingFineMessage(borrower_.getFineAmount());
+        }
+        if (dueLoans) {
+            ui_.displayOverDueMessage();
+        }
+        if (loanLimit) {
+            ui_.displayAtLoanLimitMessage();
+        }
+        if (fineLimit) {
+            ui_.displayOverFineLimitMessage(borrower_.getFineAmount());
+        }
+     
+        ui_.displayExistingLoan(buildLoanListDisplay(borrower_.getLoans()));
     }
-    
     
     
     @Override
@@ -147,27 +152,34 @@ public class BorrowUC_CTL implements ICardReaderListener,
         if (state_ != EBorrowState.SCANNING_BOOKS) {
             throw new RuntimeException("BorrowUC_CTL: bookScanned : illegal operation in state: " + state_);
         }
+        ui_.displayErrorMessage("");
+        
         IBook book = bookDAO_.getBookByID(barcode);
-        if (book != null) {
-            if (book.getState() == EBookState.AVAILABLE) {
-                if (bookList_.contains(book)) {
-                    scanCount_++;
-                    bookList_.add(book);
-                    ILoan loan = loanDAO_.createLoan(borrower_, book);
-                    loanList_.add(loan);
-                    
-                    ui_.displayScannedBookDetails(book.toString());
-                    ui_.displayPendingLoan(buildLoanListDisplay(loanList_));
-
-                    if (scanCount_ >= IMember.LOAN_LIMIT) {
-                        setState(EBorrowState.CONFIRMING_LOANS);
-                    }
-                } else
-                    ui_.displayErrorMessage("Aready scanned book " + book.getID());
-            } else
-                ui_.displayErrorMessage("Book " + book.getID() + " is not available: "+ book.getState());
-        } else
+        
+        if (book == null) {
             ui_.displayErrorMessage("Cant find book " + barcode);
+        }
+        
+        if (book.getState() != EBookState.AVAILABLE) {
+            ui_.displayErrorMessage("Book " + book.getID() + " is not available: "+ book.getState());
+        }
+            
+        if (bookList_.contains(book)) {
+            ui_.displayErrorMessage("Aready scanned book " + book.getID());
+            return;
+        }
+        
+        scanCount_++;
+        bookList_.add(book);
+        ILoan loan = loanDAO_.createLoan(borrower_, book);
+        loanList_.add(loan);
+        
+        ui_.displayScannedBookDetails(book.toString());
+        ui_.displayPendingLoan(buildLoanListDisplay(loanList_));
+        
+        if (scanCount_ >= IMember.LOAN_LIMIT) {
+            setState(EBorrowState.CONFIRMING_LOANS);
+        }            
     }
     
     
@@ -190,7 +202,13 @@ public class BorrowUC_CTL implements ICardReaderListener,
             case SCANNING_BOOKS:
                 reader_.setEnabled(false);
                 scanner_.setEnabled(true);
+                bookList_ = new ArrayList<IBook>();
+                loanList_ = new ArrayList<ILoan>();
                 scanCount_ = borrower_.getLoans().size();
+                
+                ui_.displayScannedBookDetails(""); 
+                
+                ui_.displayPendingLoan("");  
                 break;
                 
             case CANCELLED:
@@ -226,7 +244,7 @@ public class BorrowUC_CTL implements ICardReaderListener,
                 throw new RuntimeException("BorrowUC_CTL: setState : unknown state: " + state_);
         }
     }
-
+    
     @Override
     public void cancelled() {
         setState(EBorrowState.CANCELLED);
