@@ -51,6 +51,8 @@ public class BookTest {
         loan_ = new Loan(book_, member_, borrowDate_, dueDate_);
     }
     
+    
+    
     @Test
     public void testBorrowAvailable() {
         //arrange
@@ -63,6 +65,8 @@ public class BookTest {
         //assert
         assertEquals(expected, actual);
     }
+    
+    
     
     @Test(expected=RuntimeException.class)
     public void testBorrowNotAvailable() {

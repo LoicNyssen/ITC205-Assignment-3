@@ -66,6 +66,7 @@ public class BorrowUC_CTL implements ICardReaderListener,
     }
     
     
+    
     public BorrowUC_CTL(ICardReader reader, IScanner scanner, IPrinter printer, IDisplay display,
                         IBookDAO bookDAO, ILoanDAO loanDAO, IMemberDAO memberDAO, IBorrowUI ui ) {
 
@@ -96,10 +97,10 @@ public class BorrowUC_CTL implements ICardReaderListener,
     
     
     
-    
     public void close() {
         display_.setDisplay(previous_, "Main Menu");
     }
+    
     
     
     @Override
@@ -145,6 +146,7 @@ public class BorrowUC_CTL implements ICardReaderListener,
      
         ui_.displayExistingLoan(buildLoanListDisplay(borrower_.getLoans()));
     }
+    
     
     
     @Override
@@ -246,26 +248,36 @@ public class BorrowUC_CTL implements ICardReaderListener,
         }
     }
     
+    
+    
     @Override
     public void cancelled() {
         setState(EBorrowState.CANCELLED);
     }
+    
+    
     
     @Override
     public void scansCompleted() {
         setState(EBorrowState.CONFIRMING_LOANS);
     }
 
+    
+    
     @Override
     public void loansConfirmed() {
         setState(EBorrowState.COMPLETED);
     }
 
+    
+    
     @Override
     public void loansRejected() {
         setState(EBorrowState.SCANNING_BOOKS);
     }
 
+    
+    
     public String buildLoanListDisplay(List<ILoan> loans) {
         StringBuilder bld = new StringBuilder();
         for (ILoan ln : loans) {
@@ -280,9 +292,13 @@ public class BorrowUC_CTL implements ICardReaderListener,
         return loanList_;
     }
     
+    
+    
     public List<IBook> getBookList () {
         return bookList_;
     }
+    
+    
     
     public EBorrowState getState() {
         return state_;

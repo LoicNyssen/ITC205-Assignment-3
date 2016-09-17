@@ -18,10 +18,10 @@ public class BookHelperTest {
     
     @Before
     public void setUp() throws Exception {
-        author_ = "Author";
-        title_ = "title";
+        author_     = "Author";
+        title_      = "title";
         callNumber_ = "0";
-        id_ = 1;
+        id_         = 1;
         
         sut_ = new BookHelper();
     }

@@ -17,23 +17,28 @@ public class BookTest {
     private String author_;
     private String title_;
     private String callNumber_;
+    
     private int id_;
     private Book sut_; 
 
     @Before
     public void setUp() throws Exception {
-        author_ = "Author";
-        title_ = "title";
+        author_     = "Author";
+        title_      = "title";
         callNumber_ = "0";
-        id_ = 1;
+        id_         = 1;
         
         sut_ = new Book(author_, title_, callNumber_, id_);
     }
+    
+    
     
     @After
     public void tearDown() throws Exception {
         sut_ = null;
     }
+    
+    
     
     //Tests if book instance is an instance of IBook
     @Test
@@ -46,49 +51,59 @@ public class BookTest {
         assertTrue(actual instanceof IBook);
     }
     
+    
+    
     //Test if Author is set correctly
     @Test
     public void testBookAuthorSets() {
         //arrange
         String expected = author_;
-        String actual = sut_.getAuthor();
+        String actual   = sut_.getAuthor();
         
         //assert
         assertEquals(expected, actual);
     }
+    
+    
     
     //Test if Title is set correctly
     @Test
     public void testBookTitleSets() {
         //arrange
         String expected = title_;
-        String actual = sut_.getTitle();
+        String actual   = sut_.getTitle();
         
         //assert
         assertEquals(expected, actual);
     }
+    
+    
     
     //Test if CallNumber is set correctly
     @Test
     public void testBookCallNumberSets() {
         //arrange
         String expected = callNumber_;
-        String actual = sut_.getCallNumber();
+        String actual   = sut_.getCallNumber();
         
         //assert
         assertEquals(expected, actual);
     }
+    
+    
     
     //Test if ID is set correctly
     @Test
     public void testBookIDSets() {
         //arrange
         int expected = id_;
-        int actual = sut_.getID();
+        int actual   = sut_.getID();
         
         //assert
         assertEquals(expected, actual);
     }
+    
+    
     
     //Test if Exception thrown if Author is Null
     @Test(expected=IllegalArgumentException.class)
@@ -100,6 +115,8 @@ public class BookTest {
         fail("Should have thrown a IllegalArgumentException");
     }
     
+    
+    
     //Test if Exception thrown if Author is Empty
     @Test(expected=IllegalArgumentException.class)
     public void testBookEmptyAuthorPassed() {
@@ -109,6 +126,8 @@ public class BookTest {
         //assert
         fail("Should have thrown a IllegalArgumentException");
     }
+    
+    
     
     //Test if Exception thrown if Title is Null
     @Test(expected=IllegalArgumentException.class)
@@ -120,6 +139,8 @@ public class BookTest {
         fail("Should have thrown a IllegalArgumentException");
     }
     
+    
+    
     //Test if Exception thrown if Title is Empty
     @Test(expected=IllegalArgumentException.class)
     public void testBookEmptyTitlePassed() {
@@ -129,6 +150,8 @@ public class BookTest {
         //assert
         fail("Should have thrown a IllegalArgumentException");
     }
+    
+    
     
     //Test if Exception thrown if CallNumber is Null
     @Test(expected=IllegalArgumentException.class)
@@ -140,6 +163,8 @@ public class BookTest {
         fail("Should have thrown a IllegalArgumentException");
     }
     
+    
+    
     //Test if Exception thrown if CallNumber is Empty
     @Test(expected=IllegalArgumentException.class)
     public void testBookEmptyCallNumberPassed() {
@@ -150,6 +175,8 @@ public class BookTest {
         fail("Should have thrown a IllegalArgumentException");
     }
     
+    
+    
     //Test if Exception thrown if CAllnumber is Empty
     @Test(expected=IllegalArgumentException.class)
     public void testBookIncorrectIdPassed() {
@@ -159,6 +186,8 @@ public class BookTest {
         //assert
         fail("Should have thrown a IllegalArgumentException");
     }
+    
+    
     
     //Test if exception thrown is book is in incorrect state
     @Test(expected=RuntimeException.class)
@@ -173,6 +202,8 @@ public class BookTest {
         //assert
         fail("Should have thrown a RuntimeException");
     }
+    
+    
     
     //Tests if book's loan variable is the same to the actual loan
     //and test book state.
@@ -193,6 +224,8 @@ public class BookTest {
         assertEquals(mockLoan, actualLoan);
     }
     
+    
+    
     //Test if getLoan returns correct loan.
     @Test
     public void testGetLoan() {
@@ -207,6 +240,8 @@ public class BookTest {
         assertEquals(expected, actual);
     }
     
+    
+    
     //Test if exception thrown if book is in incorrect state
     @Test(expected=RuntimeException.class)
     public void testReturnBookException () {
@@ -216,6 +251,8 @@ public class BookTest {
         //assert
         fail("Should have thrown a RuntimeException");
     }
+    
+    
     
     //Test returnBook with damaged book  
     @Test
@@ -234,6 +271,8 @@ public class BookTest {
         assertEquals(expected, actual);
     }
     
+    
+    
     //Test returnBook with damaged book  
     @Test
     public void testReturnBookNotDamaged () {
@@ -251,6 +290,8 @@ public class BookTest {
         assertEquals(expected, actual);
     }
     
+    
+    
     //Test if exception thrown if book is in incorrect state
     @Test(expected=RuntimeException.class)
     public void testLoseException () {
@@ -260,6 +301,8 @@ public class BookTest {
         //assert
         fail("Should have thrown a RuntimeException");
     }
+    
+    
     
     //Test if correct state set if book is lost.
     @Test
@@ -276,6 +319,8 @@ public class BookTest {
         assertEquals(expected, actual);     
     }
     
+    
+    
     //Test if exception thrown if book is in incorrect state
     @Test(expected=RuntimeException.class)
     public void testRepairException () {
@@ -285,6 +330,8 @@ public class BookTest {
         //assert
         fail("Should have thrown a RuntimeException");
     }
+    
+    
     
     //Test if correct state set if book is lost.
     @Test
@@ -303,6 +350,8 @@ public class BookTest {
         assertEquals(expected, actual);     
     }
     
+    
+    
     //Test if exception thrown if book is in incorrect state
     @Test(expected=RuntimeException.class)
     public void testDisposeException () {
@@ -315,6 +364,8 @@ public class BookTest {
         //assert
         fail("Should have thrown a RuntimeException");
     }
+    
+    
     
     //Test if exception thrown if book is in incorrect state
     @Test

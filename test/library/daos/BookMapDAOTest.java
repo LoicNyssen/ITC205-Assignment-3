@@ -21,10 +21,14 @@ public class BookMapDAOTest {
         sut_ = new BookMapDAO(bookHelper_);
     }
 
+    
+    
     @After
     public void tearDown() throws Exception {
         sut_ = null;
     }
+    
+    
     
     //Test if exception is thrown if null is passed.
     @Test(expected=IllegalArgumentException.class)
@@ -36,12 +40,14 @@ public class BookMapDAOTest {
         fail("Should have thrown a IllegalArgumentException");
     }
     
+    
+    
     //Test if book is added correctly. 
     @Test
     public void testAddBook() {
         //arrange
         String author = "Author";
-        String title = "title";
+        String title  = "title";
         String callNo = "0";
         int id = 1;
         
@@ -56,12 +62,14 @@ public class BookMapDAOTest {
         verify(bookHelper_).makeBook(author, title, callNo, id);
     }
     
+    
+    
     //Test if list of books returned correctly. 
     @Test
     public void testGetBookByID() {
         //arrange
         String author = "Author";
-        String title = "title";
+        String title  = "title";
         String callNo = "0";
         int id = 1;
         
@@ -77,6 +85,8 @@ public class BookMapDAOTest {
         assertEquals(expected, actual);
     }
     
+    
+    
     //Test if null returned correctly. 
     @Test
     public void testGetBookByIDNonexistentID() {
@@ -90,12 +100,14 @@ public class BookMapDAOTest {
         assertEquals(expected, actual);
     }
     
+    
+    
     //Test if list of books returned correctly. 
     @Test
     public void testListBooks() {
         //arrange
         String author = "Author";
-        String title = "title";
+        String title  = "title";
         String callNo = "0";
         int id = 1;
         
@@ -111,12 +123,14 @@ public class BookMapDAOTest {
         assertEquals(expected, actual);
     }
     
+    
+    
     //Test if list of books returned correctly. 
     @Test
     public void testFindBooksByAuthor() {
         //arrange
         String author = "Author";
-        String title = "title";
+        String title  = "title";
         String callNo = "0";
         int id = 1;
         
@@ -132,12 +146,14 @@ public class BookMapDAOTest {
         assertEquals(expected, actual);
     }
     
+    
+    
     //Test if list of books returned correctly. 
     @Test
     public void testFindBooksByTitle() {
         //arrange
         String author = "Author";
-        String title = "title";
+        String title  = "title";
         String callNo = "0";
         int id = 1;
         
@@ -153,12 +169,14 @@ public class BookMapDAOTest {
         assertEquals(expected, actual);
     }
     
+    
+    
     //Test if list of books returned correctly. 
     @Test
     public void testFindBooksByAuthorTitle() {
         //arrange
         String author = "Author";
-        String title = "title";
+        String title  = "title";
         String callNo = "0";
         int id = 1;
         

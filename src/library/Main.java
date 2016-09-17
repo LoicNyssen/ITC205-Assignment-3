@@ -35,13 +35,13 @@ public class Main implements IMainListener {
 	private IMemberDAO memberDAO;
 	
 	public Main() {
-		reader = new CardReader();
+		reader  = new CardReader();
 		scanner = new Scanner();
 		printer = new Printer();
 		display = new Display();
 		
-        bookDAO = new BookMapDAO(new BookHelper());
-        loanDAO = new LoanMapDAO(new LoanHelper());
+        bookDAO   = new BookMapDAO(new BookHelper());
+        loanDAO   = new LoanMapDAO(new LoanHelper());
         memberDAO = new MemberMapDAO(new MemberHelper());
 		
 		setupTestData();

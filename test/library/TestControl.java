@@ -64,11 +64,15 @@ public class TestControl {
         setUpTestData();
     }
 
+    
+    
     @After
     public void tearDown() throws Exception {
         sut = null;
     }
 
+    
+    
     @Test
     public void testInit() {
         sut.initialise();
@@ -78,6 +82,8 @@ public class TestControl {
         verify(ui).setState(EBorrowState.INITIALIZED);
     }
 
+    
+    
     @Test
     public void testCardSwipedNoRestrictions() {
         //arrange
@@ -104,6 +110,8 @@ public class TestControl {
         assertTrue(sut.getScanCount() == 0);
     }
     
+    
+    
     @Test
     public void testCardSwipedHasFines() {
         //arrange
@@ -127,6 +135,8 @@ public class TestControl {
         verify(ui).displayExistingLoan(anyString());
         assertTrue(sut.getScanCount() == 0);
     }
+    
+    
     
     @Test
     public void testCardSwipedOverdue() {
@@ -152,6 +162,8 @@ public class TestControl {
         assertTrue(sut.getScanCount() == 0);
     }
     
+    
+    
     @Test
     public void testCardSwipedLoanLimit() {
         //arrange
@@ -176,6 +188,8 @@ public class TestControl {
         assertTrue(sut.getScanCount() == 0);
     }
     
+    
+    
     @Test
     public void testCardSwipedFineLimit() {
         //arrange
@@ -199,6 +213,7 @@ public class TestControl {
         verify(ui).displayExistingLoan(anyString());
         assertTrue(sut.getScanCount() == 0);
     }
+    
     
     
     @Test
@@ -226,6 +241,8 @@ public class TestControl {
         verify(ui).displayPendingLoan(sut.buildLoanListDisplay(sut.getLoanList()));  
     }
     
+    
+    
     @Test
     public void testBookScannedOnLoan() {
         //arrange
@@ -248,17 +265,23 @@ public class TestControl {
         verify(ui).displayErrorMessage("Book " + book.getID() + " is not available: "+ book.getState());  
     }
     
+    
+    
     @Test
     public void testCancelled() {
         sut.cancelled();
         assertSame(EBorrowState.CANCELLED, sut.getState());
     }
 
+    
+    
     @Test
     public void testScansCompleted() {
         sut.scansCompleted();
         assertSame(EBorrowState.CONFIRMING_LOANS, sut.getState());
     }
+    
+    
     
     private void setUpTestData() {
         IBook[] book = new IBook[15];
@@ -318,5 +341,4 @@ public class TestControl {
             loanDAO.commitLoan(loan);
         }
     }
-
 }

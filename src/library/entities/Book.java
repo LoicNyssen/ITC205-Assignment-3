@@ -28,6 +28,8 @@ public class Book implements IBook {
         loan_       = null;
     }
 
+    
+    
     private boolean sane(String author, String title, String callNumber, int bookID) {
         return (author     != null && (!author.isEmpty()) &&
                 title      != null && (!title.isEmpty()) &&
@@ -35,6 +37,8 @@ public class Book implements IBook {
                 bookID > 0);
     }
 
+    
+    
     @Override
     public void borrow(ILoan loan) {
         if (state_ != EBookState.AVAILABLE) {
@@ -44,11 +48,15 @@ public class Book implements IBook {
         state_ = EBookState.ON_LOAN;
     }
 
+    
+    
     @Override
     public ILoan getLoan() {
         return loan_;
     }
 
+    
+    
     @Override
     public void returnBook(boolean damaged) {
         if (state_ != EBookState.ON_LOAN) {
@@ -65,6 +73,8 @@ public class Book implements IBook {
         }
     }
 
+    
+    
     @Override
     public void lose() {
         if (state_ != EBookState.ON_LOAN) {
@@ -74,6 +84,8 @@ public class Book implements IBook {
         state_ = EBookState.LOST;
     }
 
+    
+    
     @Override
     public void repair() {
         if (state_ != EBookState.DAMAGED) {
@@ -83,6 +95,8 @@ public class Book implements IBook {
         state_ = EBookState.AVAILABLE;
     }
 
+    
+    
     @Override
     public void dispose() {
         if ((state_ != EBookState.AVAILABLE) && (state_ != EBookState.DAMAGED) && (state_ != EBookState.LOST)) {
@@ -91,33 +105,44 @@ public class Book implements IBook {
         state_ = EBookState.DISPOSED;
     }
 
+    
+    
     @Override
     public EBookState getState() {
         return state_;
     }
     
+    
+    
     public void setState(EBookState state) {
         state_ = state;
     }
 
+    
+    
     @Override
     public String getAuthor() {
         return author_;
     }
 
+    
+    
     @Override
     public String getTitle() {
         return title_;
     }
 
+    
+    
     @Override
     public String getCallNumber() {
         return callNumber_;
     }
 
+    
+    
     @Override
     public int getID() {
         return id_;
     }
-
 }

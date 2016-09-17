@@ -67,6 +67,8 @@ public class ScenarioTest {
         setUpTestData();
     }
 
+    
+    
     @After
     public void tearDown() throws Exception {
         ctl = null;
@@ -75,6 +77,7 @@ public class ScenarioTest {
         reset(ui);
     }
 
+    
 
     @Test
     public void TestBorrowSingleBook() {
@@ -115,6 +118,8 @@ public class ScenarioTest {
         assertSame(EBorrowState.COMPLETED, ctl.getState());
         verify(printer).print(ctl.buildLoanListDisplay(ctl.getLoanList()));
     }
+    
+    
     
     @Test
     public void TestBorrowMultibleBooks() {
@@ -163,6 +168,8 @@ public class ScenarioTest {
         assertSame(EBorrowState.COMPLETED, ctl.getState());
         verify(printer).print(ctl.buildLoanListDisplay(ctl.getLoanList()));
     }
+    
+    
     
     private void setUpTestData() {
         IBook[] book = new IBook[15];
@@ -222,5 +229,4 @@ public class ScenarioTest {
             loanDAO.commitLoan(loan);
         }
     }
-
 }

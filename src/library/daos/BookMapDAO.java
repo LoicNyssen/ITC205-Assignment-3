@@ -24,6 +24,8 @@ public class BookMapDAO implements IBookDAO {
         bookMap_ = new HashMap<Integer, IBook>();
     }
     
+    
+    
     @Override
     public IBook addBook(String author, String title, String callNo) {
         int id = getNextId();
@@ -32,6 +34,8 @@ public class BookMapDAO implements IBookDAO {
         return book;
     }
 
+    
+    
     @Override
     public IBook getBookByID(int id) {
         if (bookMap_.containsKey(Integer.valueOf(id))) {
@@ -40,11 +44,15 @@ public class BookMapDAO implements IBookDAO {
         return null;
     }
 
+    
+    
     @Override
     public List<IBook> listBooks() {
         return new ArrayList<IBook>(bookMap_.values());
     }
 
+    
+    
     @Override
     public List<IBook> findBooksByAuthor(String author) {
         List<IBook> list = new ArrayList<IBook>();
@@ -58,6 +66,8 @@ public class BookMapDAO implements IBookDAO {
         return list;
     }
 
+    
+    
     @Override
     public List<IBook> findBooksByTitle(String title) {
         List<IBook> list = new ArrayList<IBook>();
@@ -71,6 +81,8 @@ public class BookMapDAO implements IBookDAO {
         return list;
     }
 
+    
+    
     @Override
     public List<IBook> findBooksByAuthorTitle(String author, String title) {
         List<IBook> list = new ArrayList<IBook>();
@@ -83,6 +95,8 @@ public class BookMapDAO implements IBookDAO {
         }
         return list;
     }
+    
+    
     
     private int getNextId() {
         return nextId_++;

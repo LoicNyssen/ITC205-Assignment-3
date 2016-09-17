@@ -23,8 +23,8 @@ public class BookDAOTest {
     
     private BookMapDAO bookMapDAO_;
     
-    private String author_[] = new String[totalBooks_];
-    private String title_[] = new String[totalBooks_];
+    private String author_[]     = new String[totalBooks_];
+    private String title_[]      = new String[totalBooks_];
     private String callNumber_[] = new String[totalBooks_];
     
 
@@ -32,6 +32,8 @@ public class BookDAOTest {
     public void setUp() throws Exception {
         setUpTestData();
     }
+    
+    
     
     public void setUpTestData() {
         bookHelper_ = new BookHelper();
@@ -52,12 +54,16 @@ public class BookDAOTest {
         }
     }
 
+    
+    
     @Test
     public void testListBooks() {
         List<IBook> bookList = bookMapDAO_.listBooks();
 
         assertEquals(totalBooks_, bookList.size());
     }
+    
+    
     
     @Test
     public void testFindBooksByAuthor() {
@@ -75,6 +81,8 @@ public class BookDAOTest {
         assertEquals(noBooks_, books.size());
     }
 
+    
+    
     @Test
     public void testFindBooksByTitle() {
         //arrange
@@ -90,6 +98,8 @@ public class BookDAOTest {
         }
         assertEquals(noAuthors_, books.size());
     }
+    
+    
     
     @Test
     public void testFindBooksByAuthorTitle() {
