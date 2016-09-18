@@ -110,7 +110,7 @@ public class ScenarioTest {
         assertEquals(EBookState.AVAILABLE, book.getState());
         assertEquals(1, ctl.getScanCount());
         assertTrue(ctl.getBookList().contains(book));
-        verify(ui).displayScannedBookDetails(book.toString());
+        verify(ui).displayScannedBookDetails(book.getAuthor() + " " + book.getTitle());
         verify(ui).displayPendingLoan(ctl.buildLoanListDisplay(ctl.getLoanList()));  
         
         ctl.loansConfirmed();
@@ -165,6 +165,47 @@ public class ScenarioTest {
         
         ctl.loansConfirmed();
 
+        assertSame(EBorrowState.COMPLETED, ctl.getState());
+        verify(printer).print(ctl.buildLoanListDisplay(ctl.getLoanList()));
+    }   
+    
+    
+    
+    @Test
+    public void TestBorrowMaxBooks() {
+        //arrange
+        ctl.initialise();
+
+        verify(reader).setEnabled(true);
+        verify(scanner).setEnabled(false);
+        verify(ui).setState(EBorrowState.INITIALIZED);
+        
+        int memberId = 1;
+        
+        ctl.cardSwiped(memberId);
+        
+        assertEquals(EBorrowState.SCANNING_BOOKS,ctl.getState());
+        verify(reader).setEnabled(false);
+        verify(scanner).setEnabled(true);
+        verify(ui).setState(EBorrowState.SCANNING_BOOKS);
+        verify(ui).displayScannedBookDetails("");           
+        verify(ui).displayPendingLoan(""); 
+        verify(ui).displayMemberDetails(eq(memberId), anyString(), anyString());  
+        verify(ui).displayExistingLoan(anyString());
+        assertTrue(ctl.getScanCount() == 0);
+        
+        for (int i = 10; i < 15; i++) {
+            ctl.bookScanned(i);
+            
+            IBook book = bookDAO.getBookByID(i);
+            
+            assertEquals(EBookState.AVAILABLE, book.getState());
+            assertEquals(ctl.getScanCount(), (i - 9));
+            assertTrue(ctl.getBookList().contains(book));
+        }
+        
+        ctl.loansConfirmed();
+        
         assertSame(EBorrowState.COMPLETED, ctl.getState());
         verify(printer).print(ctl.buildLoanListDisplay(ctl.getLoanList()));
     }
