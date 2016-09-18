@@ -177,7 +177,7 @@ public class BorrowUC_CTL implements ICardReaderListener,
         ILoan loan = loanDAO_.createLoan(borrower_, book);
         loanList_.add(loan);
         
-        ui_.displayScannedBookDetails(book.toString());
+        ui_.displayScannedBookDetails(book.getAuthor() + " " + book.getTitle());
         ui_.displayPendingLoan(buildLoanListDisplay(loanList_));
         
         if (scanCount_ >= IMember.LOAN_LIMIT) {
