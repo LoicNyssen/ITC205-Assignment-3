@@ -295,6 +295,28 @@ public class TestControl {
     
     
     
+    @Test(expected=RuntimeException.class)
+    public void testCardSwipedIncorrectState() {
+        //execute
+        sut.cardSwiped(1);
+        
+        //assert
+        fail("Should have thrown a RuntimeException");
+    }
+    
+    
+    
+    @Test(expected=RuntimeException.class)
+    public void testBookScannedIncorrectState() {
+        //execute
+        sut.bookScanned(1);
+        
+        //assert
+        fail("Should have thrown a RuntimeException");
+    }
+    
+    
+    
     private void setUpTestData() {
         IBook[] book = new IBook[15];
         IMember[] member = new IMember[6];
