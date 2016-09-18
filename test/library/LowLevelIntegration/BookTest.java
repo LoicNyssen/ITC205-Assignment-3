@@ -1,4 +1,4 @@
-package libary.LowLevelIntegration;
+package library.LowLevelIntegration;
 
 import static org.junit.Assert.*;
 
