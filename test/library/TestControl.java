@@ -274,13 +274,25 @@ public class TestControl {
     }
 
     
-    /* Test Failing, not sure why. Come back to this if you have time. 
+
     @Test
     public void testScansCompleted() {
+        //arrange
+        sut.initialise();
+        reset(reader);
+        reset(scanner);
+        reset(ui);
+
+        int memberId = 1;
+        sut.cardSwiped(memberId);
+
+        //execute
         sut.scansCompleted();
+        
+        //assert
         assertSame(EBorrowState.CONFIRMING_LOANS, sut.getState());
     }
-    */
+    
     
     
     private void setUpTestData() {
